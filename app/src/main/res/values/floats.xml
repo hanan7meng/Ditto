@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="view_alpha" type="dimen" format="float">1</item>
+    <item name="view_alpha_dark" type="dimen" format="float">0.2</item>
+</resources>
