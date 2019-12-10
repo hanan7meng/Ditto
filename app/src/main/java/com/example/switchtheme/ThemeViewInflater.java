@@ -1,6 +1,5 @@
 package com.example.switchtheme;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -27,38 +26,40 @@ import com.example.switchtheme.view.ThemeView;
  */
 public class ThemeViewInflater {
 
-    private AppCompatDelegate mDelegate;
-
     private volatile static ThemeViewInflater sInstance;
 
-    private ThemeViewInflater(Activity activity) {
-        mDelegate = AppCompatDelegate.create(activity, null);
-    }
+    private static final String NAME_SPACE = "http://schemas.android.com/apk/res-auto";
 
-    public static ThemeViewInflater getInstance(Activity activity) {
+    private ThemeViewInflater() {}
+
+    public static ThemeViewInflater getInstance() {
         if (sInstance == null) {
             synchronized (ThemeViewInflater.class) {
                 if (sInstance == null) {
-                    sInstance = new ThemeViewInflater(activity);
+                    sInstance = new ThemeViewInflater();
                 }
             }
         }
         return sInstance;
     }
 
-
-    public LayoutInflater.Factory2 getLayoutInflaterFactory() {
+    public LayoutInflater.Factory2 getLayoutInflaterFactory(AppCompatDelegate delegate) {
         return new LayoutInflater.Factory2() {
             @Nullable
             @Override
             public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
-                return mDelegate.createView(null, name, context, attrs);
+                return delegate.createView(null, name, context, attrs);
             }
 
             @Nullable
             @Override
             public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
-                View view = null;
+                boolean enable = attrs.getAttributeBooleanValue(NAME_SPACE, "theme_enable", false);
+                if (!enable) {
+                    return delegate.createView(parent, name, context, attrs);
+                }
+
+                View view;
                 switch (name) {
                     case ThemeSupportView.VIEW:
                         view = new ThemeView(context, attrs);
@@ -85,10 +86,7 @@ public class ThemeViewInflater {
                         view = new ThemeLinearLayout(context, attrs);
                         break;
                     default:
-                }
-
-                if (view == null) {
-                    return mDelegate.createView(parent, name, context, attrs);
+                        view = delegate.createView(parent, name, context, attrs);
                 }
 
                 return view;

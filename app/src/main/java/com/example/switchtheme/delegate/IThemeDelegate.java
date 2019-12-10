@@ -2,10 +2,11 @@ package com.example.switchtheme.delegate;
 
 import android.util.AttributeSet;
 
-import com.example.switchtheme.data.ThemeMessage;
 import com.example.switchtheme.attribute.ThemeAttr;
 
 import com.example.switchtheme.data.ThemeConst.ThemeAttrs;
+import com.example.switchtheme.view.IThemeView;
+
 
 /**
  * @author menghaonan
@@ -13,23 +14,21 @@ import com.example.switchtheme.data.ThemeConst.ThemeAttrs;
  */
 public interface IThemeDelegate {
 
-    void holdAttrs(AttributeSet attrSet);
+    void holdAttrs(AttributeSet attrSet, IThemeView themeView);
 
-    ThemeAttr holdAttr(@ThemeAttrs String attr, int resId);
+    ThemeAttr holdAttr(@ThemeAttrs String attrName, int resId, IThemeView themeView);
 
-    void receiveThemeMessage(ThemeMessage msg);
+    void switchTheme(IThemeView themeView);
 
-    void switchTheme();
+    void setBackground(int resId, IThemeView themeView);
 
-    void setBackground(int resId);
+    void setTextColor(int resId, IThemeView themeView);
 
-    void setTextColor(int resId);
+    void setAlpha(int resId, IThemeView themeView);
 
-    void setAlpha(int resId);
+    void setImageResource(int resId, IThemeView themeView);
 
-    void setImageResource(int resId);
+    void register(IThemeView themeView);
 
-    void register();
-
-    void unRegister();
+    void unRegister(IThemeView themeView);
 }

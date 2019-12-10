@@ -22,13 +22,15 @@ public class ThemeConst {
             ThemeAttrs.THEME_ATTR_BACKGROUND,
             ThemeAttrs.THEME_ATTR_TEXT_COLOR,
             ThemeAttrs.THEME_ATTR_SRC,
-            ThemeAttrs.THEME_ATTR_ALPHA
+            ThemeAttrs.THEME_ATTR_ALPHA,
+            ThemeAttrs.THEME_ATTR_STYLE
     })
     public @interface ThemeAttrs {
         String THEME_ATTR_BACKGROUND = "background";
         String THEME_ATTR_TEXT_COLOR = "textColor";
         String THEME_ATTR_SRC = "src";
         String THEME_ATTR_ALPHA = "alpha";
+        String THEME_ATTR_STYLE = "style";
     }
 
     @StringDef({

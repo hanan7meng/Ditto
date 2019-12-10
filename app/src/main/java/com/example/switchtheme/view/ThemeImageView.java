@@ -2,19 +2,29 @@ package com.example.switchtheme.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.view.View;
 
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 
-import com.example.switchtheme.delegate.IThemeDelegate;
-import com.example.switchtheme.delegate.ThemeDelegateImpl;
+import com.example.switchtheme.attribute.ThemeAttr;
+import com.example.switchtheme.data.ThemeMessage;
+import com.example.switchtheme.delegate.ThemeDelegate;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Map;
 
 /**
  * @author menghaonan
  * @date 2019/12/3
  */
-public class ThemeImageView extends ImageView implements IThemeView {
-    private IThemeDelegate mDelegate;
+public class ThemeImageView extends AppCompatImageView implements IThemeView {
+
+    private Map<String, ThemeAttr> mAttrs;
 
     public ThemeImageView(Context context) {
         super(context);
@@ -31,40 +41,56 @@ public class ThemeImageView extends ImageView implements IThemeView {
         init(attrs);
     }
 
-    public ThemeImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(attrs);
-    }
-
     @Override
     public void init(AttributeSet attrSet) {
-        mDelegate = new ThemeDelegateImpl(this);
         if (attrSet != null) {
-            mDelegate.holdAttrs(attrSet);
+            ThemeDelegate.getInstance().holdAttrs(attrSet, this);
         }
     }
 
-    public void setThemeBackground(int resId) {
-        mDelegate.setBackground(resId);
+    @Override
+    public Map<String, ThemeAttr> getThemeAttrs() {
+        return mAttrs;
     }
 
-    public void setThemeImageResource(int resId) {
-        mDelegate.setImageResource(resId);
+    @Override
+    public void setThemeAttrs(Map<String, ThemeAttr> attrs) {
+        mAttrs = attrs;
     }
 
-    public void setThemeAlpha(int resId) {
-        mDelegate.setAlpha(resId);
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    public void setThemeBackground(@DrawableRes int resId) {
+        ThemeDelegate.getInstance().setBackground(resId, this);
+    }
+
+    public void setThemeImageResource(@DrawableRes int resId) {
+        ThemeDelegate.getInstance().setImageResource(resId, this);
+    }
+
+    public void setThemeAlpha(@DimenRes int resId) {
+        ThemeDelegate.getInstance().setAlpha(resId, this);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mDelegate.register();
+        ThemeDelegate.getInstance().register(this);
+        ThemeDelegate.getInstance().switchTheme(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mDelegate.unRegister();
+        ThemeDelegate.getInstance().unRegister(this);
+    }
+
+    @Override
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveThemeMessage(ThemeMessage msg) {
+        ThemeDelegate.getInstance().switchTheme(this);
     }
 }
