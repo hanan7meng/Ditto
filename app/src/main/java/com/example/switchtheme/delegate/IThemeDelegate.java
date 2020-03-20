@@ -3,7 +3,6 @@ package com.example.switchtheme.delegate;
 import android.util.AttributeSet;
 
 import com.example.switchtheme.attribute.ThemeAttr;
-
 import com.example.switchtheme.data.ThemeConst.ThemeAttrs;
 import com.example.switchtheme.view.IThemeView;
 
@@ -27,6 +26,8 @@ public interface IThemeDelegate {
     void setAlpha(int resId, IThemeView themeView);
 
     void setImageResource(int resId, IThemeView themeView);
+
+    void setHintTextColor(int resId, IThemeView themeView);
 
     void register(IThemeView themeView);
 

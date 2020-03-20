@@ -23,7 +23,8 @@ public class ThemeConst {
             ThemeAttrs.THEME_ATTR_TEXT_COLOR,
             ThemeAttrs.THEME_ATTR_SRC,
             ThemeAttrs.THEME_ATTR_ALPHA,
-            ThemeAttrs.THEME_ATTR_STYLE
+            ThemeAttrs.THEME_ATTR_STYLE,
+            ThemeAttrs.THEME_ATTR_TEXT_COLOR_HINT
     })
     public @interface ThemeAttrs {
         String THEME_ATTR_BACKGROUND = "background";
@@ -31,6 +32,7 @@ public class ThemeConst {
         String THEME_ATTR_SRC = "src";
         String THEME_ATTR_ALPHA = "alpha";
         String THEME_ATTR_STYLE = "style";
+        String THEME_ATTR_TEXT_COLOR_HINT = "textColorHint";
     }
 
     @StringDef({
@@ -41,7 +43,8 @@ public class ThemeConst {
             ThemeSupportView.FRAME_LAYOUT,
             ThemeSupportView.LINEAR_LAYOUT,
             ThemeSupportView.CONSTRAINT_LAYOUT,
-            ThemeSupportView.RELATIVE_LAYOUT
+            ThemeSupportView.RELATIVE_LAYOUT,
+            ThemeSupportView.EDIT_TEXT
     })
     public @interface ThemeSupportView {
         String VIEW = "View";
@@ -52,5 +55,15 @@ public class ThemeConst {
         String LINEAR_LAYOUT = "LinearLayout";
         String CONSTRAINT_LAYOUT = "androidx.constraintlayout.widget.ConstraintLayout";
         String RELATIVE_LAYOUT = "RelativeLayout";
+        String EDIT_TEXT = "EditText";
+    }
+
+    @StringDef({
+            ResType.TYPE_COLOR,
+            ResType.TYPE_DRAWABLE
+    })
+    public @interface ResType {
+        String TYPE_COLOR = "color";
+        String TYPE_DRAWABLE = "drawable";
     }
 }

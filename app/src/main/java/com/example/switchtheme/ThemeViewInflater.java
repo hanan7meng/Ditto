@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.switchtheme.view.ThemeButton;
 import com.example.switchtheme.view.ThemeConstraintLayout;
+import com.example.switchtheme.view.ThemeEditText;
 import com.example.switchtheme.view.ThemeFrameLayout;
 import com.example.switchtheme.view.ThemeImageView;
 import com.example.switchtheme.view.ThemeLinearLayout;
@@ -84,6 +85,9 @@ public class ThemeViewInflater {
                         break;
                     case ThemeSupportView.LINEAR_LAYOUT:
                         view = new ThemeLinearLayout(context, attrs);
+                        break;
+                    case ThemeSupportView.EDIT_TEXT:
+                        view = new ThemeEditText(context, attrs);
                         break;
                     default:
                         view = delegate.createView(parent, name, context, attrs);

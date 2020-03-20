@@ -1,16 +1,8 @@
 package com.example.switchtheme.delegate;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.example.switchtheme.ThemeApplication;
 import com.example.switchtheme.ThemeManager;
@@ -18,6 +10,10 @@ import com.example.switchtheme.attribute.ThemeAttr;
 import com.example.switchtheme.attribute.ThemeAttrUtil;
 import com.example.switchtheme.data.ThemeConst.ThemeAttrs;
 import com.example.switchtheme.view.IThemeView;
+import com.example.switchtheme.view.wrapper.ThemeEditTextWrapper;
+import com.example.switchtheme.view.wrapper.ThemeImageViewWrapper;
+import com.example.switchtheme.view.wrapper.ThemeTextViewWrapper;
+import com.example.switchtheme.view.wrapper.ThemeViewWrapper;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -31,13 +27,20 @@ import java.util.Map;
 public class ThemeDelegate implements IThemeDelegate {
 
     private Context mContext;
-    private Resources mResource;
+
+    private ThemeViewWrapper mView;
+    private ThemeImageViewWrapper mImageView;
+    private ThemeTextViewWrapper mTextView;
+    private ThemeEditTextWrapper mEditText;
 
     private volatile static IThemeDelegate sInstance;
 
     private ThemeDelegate() {
         mContext = ThemeApplication.getContext();
-        mResource = mContext.getResources();
+
+        mView = new ThemeViewWrapper(mContext);
+        mImageView = new ThemeImageViewWrapper(mContext);
+        mTextView = new ThemeTextViewWrapper(mContext);
     }
 
     public static IThemeDelegate getInstance() {
@@ -92,16 +95,16 @@ public class ThemeDelegate implements IThemeDelegate {
     private void switchThemeByAttr(ThemeAttr attr, View view) {
         switch (attr.getAttrName()) {
             case ThemeAttrs.THEME_ATTR_BACKGROUND:
-                setBackground(attr, view);
+                mView.setBackground(attr, view);
                 break;
             case ThemeAttrs.THEME_ATTR_TEXT_COLOR:
-                setTextColor(attr, view);
+                mTextView.setTextColor(attr, view);
                 break;
             case ThemeAttrs.THEME_ATTR_SRC:
-                setImageResource(attr, view);
+                mImageView.setImageResource(attr, view);
                 break;
             case ThemeAttrs.THEME_ATTR_ALPHA:
-                setAlpha(attr, view);
+                mView.setAlpha(attr, view);
                 break;
             default:
         }
@@ -109,58 +112,27 @@ public class ThemeDelegate implements IThemeDelegate {
 
     @Override
     public void setBackground(int resId, IThemeView themeView) {
-        setBackground(holdAttr(ThemeAttrs.THEME_ATTR_BACKGROUND, resId, themeView), themeView.getView());
-    }
-
-    private void setBackground(ThemeAttr attr, View view) {
-        Drawable drawable = ContextCompat.getDrawable(mContext, getRealResIdByThemeAttr(attr));
-        view.setBackground(drawable);
+        mView.setBackground(holdAttr(ThemeAttrs.THEME_ATTR_BACKGROUND, resId, themeView), themeView.getView());
     }
 
     @Override
     public void setTextColor(int resId, IThemeView themeView) {
-        setTextColor(holdAttr(ThemeAttrs.THEME_ATTR_TEXT_COLOR, resId, themeView), themeView.getView());
-    }
-
-    private void setTextColor(ThemeAttr attr, View view) {
-        ColorStateList color = ContextCompat.getColorStateList(mContext, getRealResIdByThemeAttr(attr));
-        if (view instanceof TextView) {
-            ((TextView) view).setTextColor(color);
-        }
+        mTextView.setTextColor(holdAttr(ThemeAttrs.THEME_ATTR_TEXT_COLOR, resId, themeView), themeView.getView());
     }
 
     @Override
     public void setAlpha(int resId, IThemeView themeView) {
-        setAlpha(holdAttr(ThemeAttrs.THEME_ATTR_ALPHA, resId, themeView), themeView.getView());
-    }
-
-    private void setAlpha(ThemeAttr attr, View view) {
-        float alpha = ResourcesCompat.getFloat(mResource, getRealResIdByThemeAttr(attr));
-        view.setAlpha(alpha);
+        mView.setAlpha(holdAttr(ThemeAttrs.THEME_ATTR_ALPHA, resId, themeView), themeView.getView());
     }
 
     @Override
     public void setImageResource(int resId, IThemeView themeView) {
-        setImageResource(holdAttr(ThemeAttrs.THEME_ATTR_SRC, resId, themeView), themeView.getView());
+        mImageView.setImageResource(holdAttr(ThemeAttrs.THEME_ATTR_SRC, resId, themeView), themeView.getView());
     }
 
-    private void setImageResource(ThemeAttr attr, View view) {
-        Drawable drawable = ContextCompat.getDrawable(mContext, getRealResIdByThemeAttr(attr));
-        if (view instanceof ImageView) {
-            ((ImageView) view).setImageDrawable(drawable);
-        }
-    }
-
-    /**
-     * resName, resType, res所在package可以确定该res的id
-     */
-    private int getRealResIdByThemeAttr(ThemeAttr attr) {
-        int resId = mResource.getIdentifier(attr.getResourceName(), attr.getTypeName(), attr.getPackageName());
-        // 对应主题的资源id不存在的话, 那就用默认主题的
-        if (resId == 0) {
-            resId = mResource.getIdentifier(attr.getEntryName(), attr.getTypeName(), attr.getPackageName());
-        }
-        return resId;
+    @Override
+    public void setHintTextColor(int resId, IThemeView themeView) {
+        mEditText.setHintTextColor(holdAttr(ThemeAttrs.THEME_ATTR_TEXT_COLOR_HINT, resId, themeView), themeView.getView());
     }
 
     private Map<String, ThemeAttr> checkAttrsEmpty(Map<String, ThemeAttr> attrs) {
