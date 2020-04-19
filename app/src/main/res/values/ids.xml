@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 换肤框架相关的id -->
+    <!-- svg颜色 -->
     <item name="id_vector_color" type="id" />
+    <!-- 是否开启换肤功能 -->
+    <item name="id_switch_theme_enabled" type="id" />
+    <!-- 设置自定义换肤策略 -->
+    <item name="id_switch_theme_strategy" type="id" />
+    <!-- 设置View自己的theme -->
+    <item name="id_view_custom_theme" type="id" />
 </resources>

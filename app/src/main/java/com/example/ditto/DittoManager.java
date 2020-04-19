@@ -1,12 +1,18 @@
 package com.example.ditto;
 
 import android.text.TextUtils;
+import android.view.View;
 
-import com.example.ditto.data.DittoConst.Theme;
-import com.example.ditto.data.DittoMessage;
-import com.example.ditto.data.DittoPrefs;
+import androidx.annotation.ColorRes;
 
-import org.greenrobot.eventbus.EventBus;
+import com.example.ditto.event.DittoEvent;
+import com.example.ditto.event.handler.DefaultDittoEventHandler;
+import com.example.ditto.event.handler.IDittoEventHandler;
+import com.example.ditto.model.DittoConst.Theme;
+import com.example.ditto.model.DittoPrefs;
+import com.example.ditto.model.cache.IDittoResLoader;
+import com.example.ditto.utils.ThemeTagUtil;
+import com.example.ditto.widget.strategy.IThemeStrategy;
 
 /**
  * @author menghaonan
@@ -17,10 +23,13 @@ public class DittoManager {
 
     private volatile static DittoManager sInstance;
 
-    private DittoMessage mMsg;
+    private DittoEvent mEvent;
+    private IDittoEventHandler mEventHandler;
+    private IDittoResLoader mResLoader;
 
     private DittoManager() {
-        mMsg = new DittoMessage();
+        mEvent = new DittoEvent();
+        mEventHandler = new DefaultDittoEventHandler();
     }
 
     public static DittoManager getInstance() {
@@ -37,7 +46,7 @@ public class DittoManager {
     /**
      * 通知View更新
      */
-    void switchTheme(@Theme String theme) {
+    public void switchTheme(@Theme String theme) {
         if (TextUtils.equals(mCurrentTheme, theme)) {
             return;
         }
@@ -52,14 +61,38 @@ public class DittoManager {
         return mCurrentTheme;
     }
 
-    private void setCurrentTheme(@Theme String theme) {
+    public void setCurrentTheme(@Theme String theme) {
         mCurrentTheme = theme;
         // 当前主题存本地, 下次初始化使用
         DittoPrefs.setCurrentTheme(theme);
     }
 
     private void sendMessage(String theme) {
-        mMsg.setTheme(theme);
-        EventBus.getDefault().post(mMsg);
+        mEvent.setTheme(theme);
+        mEventHandler.sendEvent(mEvent);
+    }
+
+    public boolean isDefaultTheme() {
+        return Theme.THEME_DEFAULT.equals(mCurrentTheme);
+    }
+
+    public void setResLoader(IDittoResLoader cache) {
+        mResLoader = cache;
+    }
+
+    public IDittoResLoader getResLoader() {
+        return mResLoader;
+    }
+
+    public void setDittoEventHandler(IDittoEventHandler handler) {
+        mEventHandler = handler;
+    }
+
+    public void setThemeStrategy(IThemeStrategy strategy, View... views) {
+        ThemeTagUtil.setThemeStrategy(strategy, views);
+    }
+
+    public void setVectorColorId(@ColorRes int colorId, View... views) {
+        ThemeTagUtil.setVectorColorId(colorId, views);
     }
 }

@@ -2,6 +2,7 @@ package com.example.ditto;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 
 /**
  * @author menghaonan
@@ -16,7 +17,11 @@ public class DittoApplication extends Application {
         sApplicationContext = getApplicationContext();
     }
 
-    public static Context getContext() {
+    public static Context getAppContext() {
         return sApplicationContext;
+    }
+
+    public static Resources getAppResources() {
+        return sApplicationContext.getResources();
     }
 }

@@ -7,16 +7,17 @@ import android.util.Log;
 
 import com.example.ditto.DittoApplication;
 import com.example.ditto.DittoManager;
+import com.example.ditto.model.DittoConst.Attrs;
+import com.example.ditto.model.attr.ThemeAttr;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.example.ditto.attribute.ThemeAttr;
-import com.example.ditto.data.DittoConst.ThemeAttrs;
-
 /**
+ * Attr相关操作的工具类
+ *
  * @author menghaonan
  * @date 2019/12/3
  */
@@ -32,25 +33,25 @@ public class ThemeAttrUtil {
     };
 
     private static final String[] STYLE_THEME_ATTRS_NAME = new String[]{
-            ThemeAttrs.THEME_ATTR_TEXT_COLOR,
-            ThemeAttrs.THEME_ATTR_BACKGROUND,
-            ThemeAttrs.THEME_ATTR_SRC,
-            ThemeAttrs.THEME_ATTR_ALPHA
+            Attrs.TEXT_COLOR,
+            Attrs.BACKGROUND,
+            Attrs.SRC,
+            Attrs.ALPHA
     };
 
     static {
-        THEME_ATTR_SET.add(ThemeAttrs.THEME_ATTR_BACKGROUND);
-        THEME_ATTR_SET.add(ThemeAttrs.THEME_ATTR_TEXT_COLOR);
-        THEME_ATTR_SET.add(ThemeAttrs.THEME_ATTR_SRC);
-        THEME_ATTR_SET.add(ThemeAttrs.THEME_ATTR_ALPHA);
+        THEME_ATTR_SET.add(Attrs.BACKGROUND);
+        THEME_ATTR_SET.add(Attrs.TEXT_COLOR);
+        THEME_ATTR_SET.add(Attrs.SRC);
+        THEME_ATTR_SET.add(Attrs.ALPHA);
+        THEME_ATTR_SET.add(Attrs.TEXT_COLOR_HINT);
     }
 
     public static Map<String, ThemeAttr> getThemeAttrs(AttributeSet attrSet) {
         if (attrSet == null) {
             return null;
         }
-        Resources res = DittoApplication.getContext().getResources();
-        String currentTheme = DittoManager.getInstance().getCurrentTheme();
+        Resources res = DittoApplication.getAppResources();
         Map<String, ThemeAttr> attrs = new HashMap<>(4);
 
         // 尝试去style中取, 如果有的话
@@ -66,11 +67,12 @@ public class ThemeAttrUtil {
                 try {
                     int id = Integer.parseInt(attrValue.substring(1));
                     ThemeAttr attr = new ThemeAttr();
+                    attr.setDefaultResId(id);
                     attr.setAttrName(attrName);
                     attr.setEntryName(res.getResourceEntryName(id));
                     attr.setPackageName(res.getResourcePackageName(id));
                     attr.setTypeName(res.getResourceTypeName(id));
-                    attr.setResourceName(currentTheme);
+                    attr.setTheme(DittoManager.getInstance().getCurrentTheme());
                     attrs.put(attrName, attr);
                 } catch (Resources.NotFoundException e) {
                     Log.e("error", "res not found" + attrName);
@@ -80,21 +82,22 @@ public class ThemeAttrUtil {
         return attrs;
     }
 
-    public static ThemeAttr getThemeAttr(@ThemeAttrs String attrName, int resId) {
-        Resources res = DittoApplication.getContext().getResources();
+    public static ThemeAttr getThemeAttr(@Attrs String attrName, int resId) {
+        Resources res = DittoApplication.getAppResources();
         ThemeAttr attr = new ThemeAttr();
+        attr.setDefaultResId(resId);
         attr.setAttrName(attrName);
         attr.setEntryName(res.getResourceEntryName(resId));
         attr.setTypeName(res.getResourceTypeName(resId));
         attr.setPackageName(res.getResourcePackageName(resId));
-        attr.setResourceName(DittoManager.getInstance().getCurrentTheme());
+        attr.setTheme(DittoManager.getInstance().getCurrentTheme());
         return attr;
     }
 
     private static void getThemeAttrsFromStyle(AttributeSet attrSet, Map<String, ThemeAttr> attrs) {
         for (int i = 0; i < attrSet.getAttributeCount(); i++) {
             String attrName = attrSet.getAttributeName(i);
-            if (!ThemeAttrs.THEME_ATTR_STYLE.equals(attrName)) {
+            if (!Attrs.STYLE.equals(attrName)) {
                 continue;
             }
             // 有style属性的话, 解析里面的属性
@@ -103,7 +106,7 @@ public class ThemeAttrUtil {
                 return;
             }
             int id = Integer.parseInt(attrValue.substring(1));
-            TypedArray array = DittoApplication.getContext().obtainStyledAttributes(id, STYLE_THEME_ATTRS);
+            TypedArray array = DittoApplication.getAppContext().obtainStyledAttributes(id, STYLE_THEME_ATTRS);
             for (int j = 0; j < array.length(); j++) {
                 String name = STYLE_THEME_ATTRS_NAME[j];
                 int resId = array.getResourceId(j, 0);
@@ -115,4 +118,5 @@ public class ThemeAttrUtil {
             array.recycle();
         }
     }
+
 }
