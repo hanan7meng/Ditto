@@ -41,6 +41,7 @@ public class ThemeDelegate implements IThemeDelegate {
         mView = new ThemeViewWrapper(mContext);
         mImageView = new ThemeImageViewWrapper(mContext);
         mTextView = new ThemeTextViewWrapper(mContext);
+        mEditText = new ThemeEditTextWrapper(mContext);
     }
 
     public static IThemeDelegate getInstance() {
